@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A1Electro — Professional Appliance Repair</title>
+  <meta name="description" content="Professional same-day appliance repair in Montréal, Laval &amp; South Shore. 90-day warranty. Book online and save $25." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Staatliches&family=Montserrat:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --accent: #CC1818;
+      --accent-light: #EE6C4E;
+      --accent-rgb: 204, 24, 24;
+      --bg: #0F0F0F;
+      --card-bg: rgba(255,255,255,0.03);
+      --card-border: rgba(255,255,255,0.06);
+      --text-primary: #FFFFFF;
+      --text-secondary: rgba(255,255,255,0.52);
+      --text-muted: rgba(255,255,255,0.22);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: auto; }
+    body {
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: 'Montserrat', sans-serif;
+      overflow-x: hidden;
+    }
+    ::selection { background: var(--accent); color: #fff; }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #1a1a1a; }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(to bottom, var(--accent), var(--accent-light));
+      border-radius: 3px;
+    }
+
+    /* ── Starscape ── */
+    #starscape {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    /* ── Scroll Progress ── */
+    #scrollProgress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px; width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-light));
+      z-index: 10000;
+    }
+
+    /* ── Loader ── */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.6s ease;
+    }
+    .loader-content { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+    .loader-logo img { height: 38px; filter: brightness(0) invert(1); }
+    .loader-logo-fallback {
+      font-family: 'Staatliches', sans-serif;
+      font-size: 2rem; letter-spacing: 4px;
+      display: none;
+    }
+    .loader-text { font-size: 0.7rem; letter-spacing: 4px; text-transform: uppercase; color: var(--text-secondary); }
+    .loader-bar-track { width: 200px; height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
+    .loader-bar-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-light));
+      transition: width 0.2s ease;
+    }
+
+    /* ── Navbar ── */
+    #navbar {
+      position: fixed;
+      top: 12px; left: 0; right: 0;
+      z-index: 1000;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .nav-inner {
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 12px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    #navbar.nav-scrolled .nav-inner {
+      max-width: 840px;
+      background: rgba(12,12,12,0.88);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-radius: 100px;
+      padding: 10px 24px;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-logo img { height: 26px; filter: brightness(0) invert(1); }
+    .nav-logo-text { font-family: 'Staatliches', sans-serif; font-size: 1.35rem; letter-spacing: 2px; color: #fff; display: none; }
+    .nav-links { display: flex; align-items: center; gap: 28px; }
+    .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 0.82rem; font-weight: 500; transition: color 0.2s; }
+    .nav-links a:hover { color: #fff; }
+    .nav-cta {
+      background: var(--accent) !important; color: #fff !important;
+      padding: 8px 20px !important; border-radius: 8px; font-weight: 600 !important;
+      box-shadow: 0 0 16px rgba(var(--accent-rgb),0.3);
+      transition: box-shadow 0.25s ease, transform 0.25s ease !important;
+    }
+    .nav-cta:hover { box-shadow: 0 0 28px rgba(var(--accent-rgb),0.55) !important; transform: translateY(-1px) !important; color: #fff !important; }
+    @media (max-width: 768px) { .nav-links { display: none; } }
+
+    /* ── Hero ── */
+    #hero {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden; z-index: 1;
+      padding: 100px 32px 60px;
+    }
+    .hero-bg { position: absolute; inset: 0; pointer-events: none; }
+    .orb { position: absolute; border-radius: 50%; filter: blur(90px); }
+    .orb-1 { width: 600px; height: 600px; background: var(--accent); top: -200px; right: -150px; opacity: 0.11; }
+    .orb-2 { width: 420px; height: 420px; background: var(--accent-light); bottom: -100px; left: -80px; opacity: 0.07; }
+    .grid-overlay {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.016) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.016) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .hero-content { position: relative; z-index: 2; text-align: center; max-width: 960px; }
+    .hero-eyebrow { display: block; font-size: 0.72rem; letter-spacing: 4px; text-transform: uppercase; color: var(--accent); font-weight: 600; margin-bottom: 18px; }
+    .hero-title {
+      font-family: 'Staatliches', sans-serif;
+      font-size: clamp(5.5rem, 15vw, 12rem);
+      line-height: 0.88; text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+    .hero-title .accent { color: var(--accent); }
+    .hero-subtitle { font-size: clamp(0.95rem, 2vw, 1.15rem); color: var(--text-secondary); max-width: 520px; margin: 0 auto 40px; line-height: 1.75; }
+    .hero-buttons { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-bottom: 56px; }
+    .btn-primary {
+      background: var(--accent); color: #fff;
+      padding: 15px 36px; border-radius: 12px;
+      font-weight: 600; font-size: 0.92rem; text-decoration: none;
+      box-shadow: 0 0 24px rgba(var(--accent-rgb),0.35);
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
+      display: inline-block;
+    }
+    .btn-primary:hover { box-shadow: 0 0 44px rgba(var(--accent-rgb),0.6); transform: translateY(-2px); }
+    .btn-secondary {
+      background: transparent; color: #fff;
+      padding: 15px 36px; border: 1px solid rgba(255,255,255,0.14); border-radius: 12px;
+      font-weight: 500; font-size: 0.92rem; text-decoration: none;
+      transition: border-color 0.3s, background 0.3s;
+      display: inline-block;
+    }
+    .btn-secondary:hover { border-color: rgba(255,255,255,0.32); background: rgba(255,255,255,0.04); }
+    .scroll-hint {
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      color: var(--text-muted); font-size: 0.7rem; letter-spacing: 2.5px; text-transform: uppercase;
+      animation: bounceHint 2.2s ease-in-out infinite;
+    }
+    .scroll-arrow { width: 18px; height: 18px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg); margin-top: -4px; }
+    @keyframes bounceHint { 0%,100% { transform: translateY(0); opacity: 0.35; } 50% { transform: translateY(7px); opacity: 0.75; } }
+
+    /* ── Scroll Animation ── */
+    .scroll-animation { height: 350vh; position: relative; z-index: 1; }
+    .scroll-sticky { position: sticky; top: 0; height: 100vh; width: 100%; overflow: hidden; }
+    #frameCanvas {
+      position: absolute; top: 0; left: 0;
+      will-change: contents;
+      transform: translateZ(0);
+      image-rendering: auto;
+    }
+    .canvas-vignette {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at center, transparent 45%, rgba(15,15,15,0.72) 100%);
+      pointer-events: none; z-index: 2;
+    }
+    @media (max-width: 1024px) { .scroll-animation { height: 300vh; } }
+    @media (max-width: 768px)  { .scroll-animation { height: 250vh; } }
+
+    /* ── Annotation Cards ── */
+    .annotation-card {
+      position: absolute; bottom: 8vh; left: 5vw; max-width: 340px;
+      background: rgba(8,8,8,0.82); border: 1px solid rgba(204,24,24,0.18);
+      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+      border-radius: 20px; padding: 26px 28px;
+      opacity: 0; transform: translateY(18px);
+      transition: opacity 0.45s ease, transform 0.45s ease;
+      pointer-events: none; z-index: 10;
+    }
+    .annotation-card.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .card-number { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+    .card-title { font-family: 'Staatliches', sans-serif; font-size: 1.7rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; line-height: 1; }
+    .card-desc { font-size: 0.83rem; color: var(--text-secondary); line-height: 1.65; margin-bottom: 16px; }
+    .card-stat { border-top: 1px solid rgba(255,255,255,0.07); padding-top: 13px; }
+    .card-stat-number { font-family: 'Staatliches', sans-serif; font-size: 1.7rem; color: var(--accent); display: block; line-height: 1; }
+    .card-stat-label { font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; display: block; }
+    @media (max-width: 768px) {
+      .annotation-card { bottom: 2vh; left: 3vw; right: 3vw; max-width: none; padding: 12px 16px; display: flex; align-items: center; gap: 14px; border-radius: 14px; }
+      .card-desc, .card-stat { display: none; }
+      .card-number { margin-bottom: 0; }
+      .card-title { font-size: 1.1rem; }
+    }
+
+    /* ── Section Helpers ── */
+    .section-label { display: block; font-size: 0.68rem; letter-spacing: 4px; text-transform: uppercase; color: var(--accent); font-weight: 600; margin-bottom: 10px; }
+    .section-title { font-family: 'Staatliches', sans-serif; font-size: clamp(2.6rem, 6vw, 5rem); text-transform: uppercase; letter-spacing: 2px; line-height: 0.95; margin-bottom: 14px; }
+    .section-subtitle { font-size: 1rem; color: var(--text-secondary); line-height: 1.7; }
+
+    /* ── Specs ── */
+    #specs {
+      position: relative; z-index: 1;
+      padding: 100px 32px; text-align: center;
+      background: linear-gradient(180deg, transparent, rgba(204,24,24,0.025) 50%, transparent);
+    }
+    .specs-header { margin-bottom: 56px; }
+    .specs-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 24px; max-width: 880px; margin: 0 auto; }
+    .spec-item { padding: 32px 16px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; transition: border-color 0.3s; }
+    .spec-item:hover { border-color: rgba(var(--accent-rgb),0.22); }
+    .spec-number { font-family: 'Staatliches', sans-serif; font-size: 3.6rem; display: block; line-height: 1; transition: color 0.3s, text-shadow 0.3s; }
+    .spec-number.counting { color: var(--accent); text-shadow: 0 0 22px rgba(var(--accent-rgb),0.5); }
+    .spec-label { font-size: 0.75rem; color: var(--text-secondary); margin-top: 8px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+    @media (max-width: 768px) { .specs-grid { grid-template-columns: repeat(2,1fr); gap: 16px; } .spec-number { font-size: 2.8rem; } }
+
+    /* ── Features ── */
+    #features { position: relative; z-index: 1; padding: 80px 32px 100px; }
+    .features-header { text-align: center; margin-bottom: 56px; }
+    .features-header .section-subtitle { max-width: 520px; margin: 0 auto; }
+    .features-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; max-width: 1100px; margin: 0 auto; }
+    .feature-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 32px; transition: transform 0.3s, border-color 0.3s; }
+    .feature-card:hover { transform: translateY(-4px); border-color: rgba(var(--accent-rgb),0.2); }
+    .feature-icon { font-size: 1.75rem; margin-bottom: 14px; display: block; }
+    .feature-card h3 { font-family: 'Staatliches', sans-serif; font-size: 1.4rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+    .feature-card p { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.65; }
+    @media (max-width: 900px) { .features-grid { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 580px) { .features-grid { grid-template-columns: 1fr; } }
+
+    /* ── CTA ── */
+    #cta { position: relative; z-index: 1; text-align: center; padding: 120px 32px; overflow: hidden; }
+    .cta-orb { position: absolute; width: 640px; height: 640px; border-radius: 50%; background: var(--accent); filter: blur(120px); opacity: 0.07; top: 50%; left: 50%; transform: translate(-50%,-50%); pointer-events: none; }
+    .cta-content { position: relative; z-index: 2; max-width: 680px; margin: 0 auto; }
+    .cta-content h2 { font-family: 'Staatliches', sans-serif; font-size: clamp(3.5rem, 9vw, 7.5rem); text-transform: uppercase; letter-spacing: 2px; line-height: 0.9; margin-bottom: 20px; }
+    .cta-content p { color: var(--text-secondary); font-size: 1rem; margin-bottom: 40px; line-height: 1.75; }
+    .cta-buttons { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    .btn-large { font-size: 1rem; padding: 18px 48px; }
+    .btn-phone { display: inline-flex; align-items: center; gap: 8px; color: var(--text-secondary); font-size: 0.95rem; font-weight: 600; text-decoration: none; padding: 18px 28px; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; transition: color 0.3s, border-color 0.3s; }
+    .btn-phone:hover { color: #fff; border-color: rgba(255,255,255,0.25); }
+
+    /* ── Testimonials ── */
+    #testimonials { position: relative; z-index: 1; padding: 80px 0 100px; }
+    .testimonials-header { text-align: center; padding: 0 32px; margin-bottom: 48px; }
+    .testimonials-track { display: flex; gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 16px 32px 40px; -webkit-overflow-scrolling: touch; scrollbar-width: none; cursor: grab; }
+    .testimonials-track:active { cursor: grabbing; }
+    .testimonials-track::-webkit-scrollbar { display: none; }
+    .testimonial-card { min-width: 340px; scroll-snap-align: start; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 30px; flex-shrink: 0; transition: border-color 0.3s; }
+    .testimonial-card:hover { border-color: rgba(var(--accent-rgb),0.15); }
+    .testimonial-stars { color: var(--accent); font-size: 0.82rem; letter-spacing: 2px; margin-bottom: 14px; }
+    .testimonial-text { font-size: 0.92rem; color: #fff; line-height: 1.75; margin-bottom: 22px; font-style: italic; }
+    .author-name { font-weight: 600; font-size: 0.88rem; display: block; }
+    .author-role { font-size: 0.78rem; color: var(--text-secondary); margin-top: 2px; display: block; }
+
+    /* ── Footer ── */
+    footer { position: relative; z-index: 1; border-top: 1px solid var(--card-border); padding: 60px 32px 40px; text-align: center; }
+    .footer-inner { max-width: 1100px; margin: 0 auto; }
+    .footer-brand { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 26px; }
+    .footer-brand img { height: 22px; filter: brightness(0) invert(1); opacity: 0.6; }
+    .footer-brand-text { font-family: 'Staatliches', sans-serif; font-size: 1.15rem; letter-spacing: 2px; color: var(--text-secondary); }
+    .footer-links { display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; margin-bottom: 24px; }
+    .footer-links a { color: var(--text-secondary); text-decoration: none; font-size: 0.83rem; transition: color 0.2s; }
+    .footer-links a:hover { color: #fff; }
+    .footer-copy { color: var(--text-muted); font-size: 0.78rem; }
+  </style>
+</head>
+<body>
+
+  <canvas id="starscape"></canvas>
+  <div id="scrollProgress"></div>
+
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-content">
+      <div class="loader-logo">
+        <img src="https://a1electro.ca/wp-content/uploads/2024/05/A1111-124x43.png" alt="A1Electro"
+          onerror="this.style.display='none';document.querySelector('.loader-logo-fallback').style.display='block';" />
+        <span class="loader-logo-fallback">A1ELECTRO</span>
+      </div>
+      <p class="loader-text">Loading</p>
+      <div class="loader-bar-track"><div class="loader-bar-fill" id="loaderBar"></div></div>
+    </div>
+  </div>
+
+  <!-- Navbar -->
+  <nav id="navbar">
+    <div class="nav-inner">
+      <a href="#hero" class="nav-logo">
+        <img src="https://a1electro.ca/wp-content/uploads/2024/05/A1111-124x43.png" alt="A1Electro"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='inline';" />
+        <span class="nav-logo-text">A1ELECTRO</span>
+      </a>
+      <div class="nav-links">
+        <a href="#features">Services</a>
+        <a href="#specs">Why Us</a>
+        <a href="#testimonials">Reviews</a>
+        <a href="#cta">Contact</a>
+        <a href="tel:5147354300" class="nav-cta">514-735-4300</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section id="hero">
+    <div class="hero-bg">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="grid-overlay"></div>
+    </div>
+    <div class="hero-content">
+      <span class="hero-eyebrow">Montréal · Laval · South Shore</span>
+      <h1 class="hero-title">Don't Replace.<br><span class="accent">Repair.</span></h1>
+      <p class="hero-subtitle">Professional same-day appliance repair by certified technicians. 90-day warranty on all parts and labour.</p>
+      <div class="hero-buttons">
+        <a href="#cta" class="btn-primary">Book Online — Save $25</a>
+        <a href="tel:5147354300" class="btn-secondary">📞 514-735-4300</a>
+      </div>
+      <div class="scroll-hint">
+        <span>Scroll to explore</span>
+        <div class="scroll-arrow"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Scroll Animation -->
+  <section class="scroll-animation">
+    <div class="scroll-sticky">
+      <canvas id="frameCanvas"></canvas>
+      <div class="canvas-vignette"></div>
+
+      <div class="annotation-card" data-show="0.08" data-hide="0.27">
+        <div class="card-number">01 — Compressor</div>
+        <h3 class="card-title">Temperature Issues</h3>
+        <p class="card-desc">A faulty compressor is the leading cause of temperature irregularities. Our certified techs diagnose and replace on the same visit.</p>
+        <div class="card-stat"><span class="card-stat-number">90 Day</span><span class="card-stat-label">Parts &amp; Labour Warranty</span></div>
+      </div>
+
+      <div class="annotation-card" data-show="0.30" data-hide="0.49">
+        <div class="card-number">02 — Evaporator</div>
+        <h3 class="card-title">Cooling Circuit</h3>
+        <p class="card-desc">Frost buildup and water leaks trace back to evaporator and defrost drain failure. Fixed with genuine OEM parts.</p>
+        <div class="card-stat"><span class="card-stat-number">Same Day</span><span class="card-stat-label">Service Available</span></div>
+      </div>
+
+      <div class="annotation-card" data-show="0.52" data-hide="0.71">
+        <div class="card-number">03 — Defrost</div>
+        <h3 class="card-title">Ice Buildup</h3>
+        <p class="card-desc">Excessive ice in the freezer signals a defrost heater or thermostat failure — one of our most common and fastest repairs.</p>
+        <div class="card-stat"><span class="card-stat-number">All Brands</span><span class="card-stat-label">Samsung · LG · Whirlpool · Bosch</span></div>
+      </div>
+
+      <div class="annotation-card" data-show="0.74" data-hide="0.95">
+        <div class="card-number">04 — Motors</div>
+        <h3 class="card-title">Unusual Noises</h3>
+        <p class="card-desc">Grinding or humming sounds indicate worn fan motors and bearings. Diagnosed and replaced on-site.</p>
+        <div class="card-stat"><span class="card-stat-number">$25 Off</span><span class="card-stat-label">When You Book Online</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Specs -->
+  <section id="specs">
+    <div class="specs-header">
+      <span class="section-label">Why A1Electro</span>
+      <h2 class="section-title">By The Numbers</h2>
+    </div>
+    <div class="specs-grid">
+      <div class="spec-item" data-target="90" data-suffix="" data-prefix=""><span class="spec-number">0</span><span class="spec-label">Day Warranty</span></div>
+      <div class="spec-item" data-target="25" data-suffix="" data-prefix="$"><span class="spec-number">$0</span><span class="spec-label">Online Savings</span></div>
+      <div class="spec-item" data-target="10" data-suffix="%" data-prefix=""><span class="spec-number">0</span><span class="spec-label">Loyal Discount</span></div>
+      <div class="spec-item" data-target="7"  data-suffix="" data-prefix=""><span class="spec-number">0</span><span class="spec-label">Days a Week</span></div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features">
+    <div class="features-header">
+      <span class="section-label">Our Services</span>
+      <h2 class="section-title">Built on Expertise</h2>
+      <p class="section-subtitle">From refrigerators to dishwashers — all major brands, all major appliances, one reliable team.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card"><span class="feature-icon">⚡</span><h3>Fastest Response</h3><p>Same-day service with efficient technicians who minimize disruption. No waiting days for a repair appointment.</p></div>
+      <div class="feature-card"><span class="feature-icon">🔧</span><h3>Certified Technicians</h3><p>Our certified techs have mastered diagnostics across all major brands and models. We get it right the first time.</p></div>
+      <div class="feature-card"><span class="feature-icon">✅</span><h3>90-Day Guarantee</h3><p>All repairs guaranteed for 90 days — parts and labour included. Only manufacturer-warrantied parts used.</p></div>
+      <div class="feature-card"><span class="feature-icon">🏠</span><h3>All Major Brands</h3><p>Samsung, LG, Whirlpool, Bosch, GE, Maytag, Frigidaire, and more. If it's broken, we can fix it.</p></div>
+      <div class="feature-card"><span class="feature-icon">📅</span><h3>No Surcharges</h3><p>Available 7 days a week including evenings and holidays — no extra charges for off-hours service.</p></div>
+      <div class="feature-card"><span class="feature-icon">💰</span><h3>Transparent Pricing</h3><p>The service fee is always deducted from the total repair cost. Book online to save an additional $25.</p></div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="cta">
+    <div class="cta-orb"></div>
+    <div class="cta-content">
+      <span class="section-label">Ready to Save?</span>
+      <h2>Stop Replacing.<br>Start Repairing.</h2>
+      <p>Same-day service across Montréal, Laval &amp; South Shore.<br>Book online now and save $25 off your repair.</p>
+      <div class="cta-buttons">
+        <a href="https://a1electro.ca/#contact" class="btn-primary btn-large" target="_blank" rel="noopener">Book Online — Save $25</a>
+        <a href="tel:5147354300" class="btn-phone">📞 514-735-4300</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section id="testimonials">
+    <div class="testimonials-header">
+      <span class="section-label">Customer Stories</span>
+      <h2 class="section-title">What They Say</h2>
+    </div>
+    <div class="testimonials-track" id="testimonialsTrack">
+      <div class="testimonial-card"><div class="testimonial-stars">★★★★★</div><p class="testimonial-text">"Our fridge stopped cooling completely on a Friday night. A1Electro arrived Saturday morning and had it running by noon. Incredibly professional and upfront about the costs."</p><div class="testimonial-author"><span class="author-name">Marie L.</span><span class="author-role">Montréal, QC</span></div></div>
+      <div class="testimonial-card"><div class="testimonial-stars">★★★★★</div><p class="testimonial-text">"I was ready to buy a new washing machine when A1Electro fixed mine for a fraction of the price. The 90-day warranty gave me real peace of mind."</p><div class="testimonial-author"><span class="author-name">David K.</span><span class="author-role">Laval, QC</span></div></div>
+      <div class="testimonial-card"><div class="testimonial-stars">★★★★★</div><p class="testimonial-text">"Called at 8AM, technician arrived by 11AM. He diagnosed the issue immediately and had the part on his truck. Done in under an hour. Highly recommend."</p><div class="testimonial-author"><span class="author-name">Sophie B.</span><span class="author-role">South Shore, QC</span></div></div>
+      <div class="testimonial-card"><div class="testimonial-stars">★★★★★</div><p class="testimonial-text">"Very honest assessment — they told me my stove was beyond economical repair and suggested a replacement instead of charging me unnecessarily. Rare integrity."</p><div class="testimonial-author"><span class="author-name">Jean-François M.</span><span class="author-role">Montréal, QC</span></div></div>
+      <div class="testimonial-card"><div class="testimonial-stars">★★★★★</div><p class="testimonial-text">"My dishwasher wasn't draining properly for weeks. A1Electro fixed it the same day I called. Saved me from buying a new one. Will definitely use again."</p><div class="testimonial-author"><span class="author-name">Priya R.</span><span class="author-role">Laval, QC</span></div></div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img src="https://a1electro.ca/wp-content/uploads/2024/05/A1111-124x43.png" alt="A1Electro" onerror="this.style.display='none';" />
+        <span class="footer-brand-text">A1ELECTRO</span>
+      </div>
+      <div class="footer-links">
+        <a href="https://a1electro.ca/#services" target="_blank">Services</a>
+        <a href="https://a1electro.ca/#problems" target="_blank">Common Problems</a>
+        <a href="https://a1electro.ca/#contact" target="_blank">Book Online</a>
+        <a href="tel:5147354300">514-735-4300</a>
+        <a href="mailto:service@a1electro.ca">service@a1electro.ca</a>
+      </div>
+      <p class="footer-copy">&copy; 2026 A1Electro. All rights reserved. Serving Montréal, Laval &amp; South Shore.</p>
+    </div>
+  </footer>
+
+  <script>
+    /* ── Starscape ── */
+    (function () {
+      const cvs = document.getElementById('starscape');
+      const ctx = cvs.getContext('2d');
+      let stars = [];
+      function init() {
+        const dpr = devicePixelRatio || 1;
+        cvs.width = innerWidth * dpr; cvs.height = innerHeight * dpr;
+        cvs.style.width = innerWidth + 'px'; cvs.style.height = innerHeight + 'px';
+        stars = Array.from({ length: 180 }, () => ({
+          x: Math.random() * cvs.width, y: Math.random() * cvs.height,
+          r: Math.random() * 1.2 + 0.3,
+          baseOp: Math.random() * 0.55 + 0.18,
+          dx: (Math.random() - 0.5) * 0.028, dy: (Math.random() - 0.5) * 0.014,
+          ts: Math.random() * 0.0007 + 0.0003, tp: Math.random() * Math.PI * 2,
+        }));
+      }
+      function draw() {
+        ctx.clearRect(0, 0, cvs.width, cvs.height);
+        const now = Date.now();
+        stars.forEach(s => {
+          s.x += s.dx; s.y += s.dy;
+          if (s.x < 0) s.x = cvs.width; if (s.x > cvs.width) s.x = 0;
+          if (s.y < 0) s.y = cvs.height; if (s.y > cvs.height) s.y = 0;
+          const op = Math.max(0, s.baseOp + Math.sin(now * s.ts + s.tp) * 0.22);
+          ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255,255,255,${op})`; ctx.fill();
+        });
+        requestAnimationFrame(draw);
+      }
+      addEventListener('resize', init); init(); draw();
+    })();
+
+    /* ── Frame sequence ── */
+    const FRAME_COUNT = 120;
+    const canvas  = document.getElementById('frameCanvas');
+    const ctx2    = canvas.getContext('2d');
+    const loader  = document.getElementById('loader');
+    const loaderBar = document.getElementById('loaderBar');
+
+    // Pre-compute cover-fit per image once loaded, keyed by frame index
+    const coverCache = {};
+
+    const frames = [];
+    let loadedCount = 0;
+    let currentFrame = -1;
+    let ticking = false;
+
+    function computeCover(img, cw, ch) {
+      const ir = img.naturalWidth / img.naturalHeight;
+      const cr = cw / ch;
+      let dw, dh;
+      if (innerWidth > 768) {
+        if (cr > ir) { dw = cw; dh = cw / ir; } else { dh = ch; dw = ch * ir; }
+      } else {
+        const z = 1.2;
+        if (cr > ir) { dh = ch * z; dw = dh * ir; } else { dw = cw * z; dh = dw / ir; }
+      }
+      return { dw, dh, dx: (cw - dw) / 2, dy: (ch - dh) / 2 };
+    }
+
+    function resizeCanvas() {
+      const dpr = devicePixelRatio || 1;
+      canvas.width  = innerWidth  * dpr;
+      canvas.height = innerHeight * dpr;
+      canvas.style.width  = innerWidth  + 'px';
+      canvas.style.height = innerHeight + 'px';
+      // Invalidate cover cache on resize
+      Object.keys(coverCache).forEach(k => delete coverCache[k]);
+      if (currentFrame >= 0) drawFrame(currentFrame);
+    }
+
+    function drawFrame(idx) {
+      const img = frames[idx];
+      if (!img || !img.complete || !img.naturalWidth) return;
+      const cw = canvas.width, ch = canvas.height;
+      // Use cached cover-fit or compute it
+      if (!coverCache[idx]) coverCache[idx] = computeCover(img, cw, ch);
+      const { dw, dh, dx, dy } = coverCache[idx];
+      ctx2.clearRect(0, 0, cw, ch);
+      ctx2.drawImage(img, dx, dy, dw, dh);
+    }
+
+    function onAllLoaded() {
+      loader.style.opacity = '0';
+      setTimeout(() => { loader.style.display = 'none'; }, 600);
+      currentFrame = 0;
+      drawFrame(0);
+    }
+
+    for (let i = 1; i <= FRAME_COUNT; i++) {
+      const img = new Image();
+      img.src = `frames/frame_${String(i).padStart(4, '0')}.jpg`;
+      const done = () => {
+        loadedCount++;
+        loaderBar.style.width = (loadedCount / FRAME_COUNT * 100) + '%';
+        if (loadedCount === FRAME_COUNT) onAllLoaded();
+      };
+      img.onload = done; img.onerror = done;
+      frames.push(img);
+    }
+
+    addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    /* ── Annotation cards (fade only — no scroll lock) ── */
+    const cards = document.querySelectorAll('.annotation-card');
+    const zones = Array.from(cards).map(c => ({
+      show: parseFloat(c.dataset.show),
+      hide: parseFloat(c.dataset.hide),
+    }));
+
+    function updateCards(progress) {
+      cards.forEach((card, i) => {
+        card.classList.toggle('visible', progress >= zones[i].show && progress <= zones[i].hide);
+      });
+    }
+
+    /* ── Unified scroll handler ── */
+    const navbar        = document.getElementById('navbar');
+    const scrollProgress = document.getElementById('scrollProgress');
+    const scrollSection = document.querySelector('.scroll-animation');
+
+    addEventListener('scroll', () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const scrollY = window.scrollY;
+        const maxScroll = document.body.scrollHeight - innerHeight;
+
+        // Progress bar
+        scrollProgress.style.width = (scrollY / maxScroll * 100) + '%';
+
+        // Navbar pill
+        navbar.classList.toggle('nav-scrolled', scrollY > 80);
+
+        // Frame mapping
+        const rect       = scrollSection.getBoundingClientRect();
+        const scrollable = scrollSection.offsetHeight - innerHeight;
+        const progress   = Math.min(1, Math.max(0, -rect.top / scrollable));
+        const frameIdx   = Math.min(FRAME_COUNT - 1, Math.floor(progress * FRAME_COUNT));
+
+        if (frameIdx !== currentFrame) {
+          currentFrame = frameIdx;
+          drawFrame(frameIdx);
+        }
+        updateCards(progress);
+        ticking = false;
+      });
+    }, { passive: true });
+
+    /* ── Specs count-up ── */
+    function easeOutExpo(t) { return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); }
+    function countUp(el, target, prefix, suffix) {
+      const start = performance.now(), dur = 1800;
+      el.classList.add('counting');
+      (function tick(now) {
+        const p = Math.min((now - start) / dur, 1);
+        el.textContent = prefix + (target % 1 === 0 ? Math.floor(easeOutExpo(p) * target) : (easeOutExpo(p) * target).toFixed(1)) + suffix;
+        if (p < 1) requestAnimationFrame(tick);
+        else { el.textContent = prefix + target + suffix; el.classList.remove('counting'); }
+      })(start);
+    }
+
+    const specObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        entry.target.querySelectorAll('.spec-item').forEach((item, i) => {
+          setTimeout(() => countUp(
+            item.querySelector('.spec-number'),
+            parseFloat(item.dataset.target),
+            item.dataset.prefix || '',
+            item.dataset.suffix || ''
+          ), i * 200);
+        });
+        specObserver.unobserve(entry.target);
+      });
+    }, { threshold: 0.3 });
+    specObserver.observe(document.getElementById('specs'));
+
+    /* ── Testimonials drag ── */
+    const track = document.getElementById('testimonialsTrack');
+    let isDragging = false, dragStartX, dragScrollLeft;
+    track.addEventListener('mousedown',  e => { isDragging = true; dragStartX = e.pageX - track.offsetLeft; dragScrollLeft = track.scrollLeft; });
+    track.addEventListener('mouseleave', () => isDragging = false);
+    track.addEventListener('mouseup',    () => isDragging = false);
+    track.addEventListener('mousemove',  e => { if (!isDragging) return; e.preventDefault(); track.scrollLeft = dragScrollLeft - (e.pageX - track.offsetLeft - dragStartX); });
+  </script>
+</body>
+</html>
