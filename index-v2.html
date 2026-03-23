@@ -303,20 +303,11 @@
     .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 24px; text-align: center; font-size: 0.78rem; color: rgba(255,255,255,0.35); }
     @media (max-width: 768px) { .footer-top { grid-template-columns: 1fr; gap: 32px; } }
 
-    /* ── Version badge ── */
-    .version-badge {
-      position: fixed; bottom: 20px; right: 20px; z-index: 9998;
-      background: var(--accent); color: #fff;
-      font-size: 0.7rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
-      padding: 6px 14px; border-radius: var(--radius);
-      box-shadow: 0 2px 12px rgba(var(--accent-rgb),0.4);
-    }
   </style>
 </head>
 <body>
 
   <div id="scrollProgress"></div>
-  <div class="version-badge">V2 — Light</div>
 
   <!-- Loader -->
   <div id="loader">
